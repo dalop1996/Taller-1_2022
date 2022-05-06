@@ -1,0 +1,397 @@
+package logica;
+import dominio.*;
+
+public class SystemImpl implements SystemI{
+
+	private ListaClientes  lclientes;
+	private ListaProductos  lproductos;
+	private ListaVentas  lventas;
+	
+	public SystemImpl() {
+		
+		lclientes = new ListaClientes(100);
+		lproductos = new ListaProductos(100);
+		lventas = new ListaVentas(100);
+	}
+	
+	public boolean ingresarCliente(String nombre,String contraseña,int saldo,String correo) {
+		
+		Cliente cliente = lclientes.buscar(nombre);
+		
+		if(cliente==null) {
+			
+			cliente= new Cliente(nombre,contraseña,saldo,correo);
+			boolean ingresado = lclientes.ingresar(cliente);
+			
+			if(ingresado) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	public boolean ingresarProductos(String nombre,int precio,int stock) {
+		
+		Producto producto = lproductos.buscar(nombre);
+		
+		if(producto==null) {
+			
+			producto = new Producto( nombre ,precio , stock);
+			boolean ingresado = lproductos.ingresar(producto);
+			
+			if(ingresado) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	public boolean ingresarVentas(String nombre,int vecesVendido) {
+		
+		Venta venta = lventas.buscar(nombre);
+		
+		if(venta==null) {
+			
+			venta = new Venta(nombre,vecesVendido);
+			boolean ingresado = lventas.ingresar(venta);
+			
+			if(ingresado) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	public boolean obtenerCliente(String name ,String password) {
+		
+		boolean found = false;
+		for(int i=0 ; i<lclientes.getCant() ; i++) {
+			if(lclientes.getElementoI(i).getNombre().toLowerCase().equals(name.toLowerCase())&&
+					lclientes.getElementoI(i).getContraseña().toLowerCase().equals(password.toLowerCase())) {
+				found=true;
+				return found;
+			}
+		}
+		return found;
+	}
+
+	public boolean bloquearUsuario(String usuarioAEliminar) {
+		
+		for(int i=0 ; i<lclientes.getCant() ; i++) {
+			
+			if(lclientes.getElementoI(i).getNombre().toLowerCase().equals(usuarioAEliminar.toLowerCase())) {
+				
+			Cliente cliente = lclientes.getElementoI(i);
+			boolean eliminado = lclientes.eliminar(cliente);
+			return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	public String obtenerDatos() {
+		
+		String dato ="";
+		
+		for(int i=0 ; i<lproductos.getCant() ; i++) {
+			
+			Producto producto = lproductos.getElementoI(i);
+			
+			dato+= producto.getNombre()+"\n"+producto.getPrecio()+"\n"+producto.getStock()+"\n";
+		}
+		
+		return dato;
+		
+	}
+	
+	
+	public String obtenerHistorial() {
+		
+		String dato="";
+		
+		for(int i=0 ; i<lventas.getCant() ; i++) {
+			
+			dato+= lventas.getElementoI(i).getNombreProducto()+": "+lventas.getElementoI(i).getVecesVendido()+"\n";
+		}
+		return dato;
+	}
+	
+	public boolean agregarProducto(String nombre, int precio, int stock) {
+		
+		Producto producto = new Producto(nombre,precio,stock);
+		
+		if(lproductos.getCant()<lproductos.getMax()) {
+			boolean ingresado = lproductos.ingresar(producto);
+			return ingresado;
+		}
+		return false;
+	}
+	
+	public boolean agregarStock(String name, int stock) {
+		
+		boolean added = false;
+		
+		for(int i=0 ; i<lproductos.getCant() ; i++) {
+			
+			if(lproductos.getElementoI(i).getNombre().toLowerCase().equals(name.toLowerCase())) {
+				int newPrice = lproductos.getElementoI(i).getStock() + stock;
+				lproductos.getElementoI(i).setStock(newPrice);
+				added = true;
+			}
+		}
+		return added;
+	}
+	
+	public boolean modificarPrecio(String nombre, int precio) {
+		
+		boolean changed = false;
+		
+		for(int i=0 ; i<lproductos.getCant() ; i++) {
+			
+			if(lproductos.getElementoI(i).getNombre().toLowerCase().equals(nombre.toLowerCase())) {
+				lproductos.getElementoI(i).setPrecio(precio);
+				changed=true;
+			}
+		}
+		return changed;
+	}
+	
+	public boolean searchProduct(String product) {
+		
+		boolean found = false;
+		
+		for(int i=0 ; i<lproductos.getCant() ; i++) {
+			if((product.toLowerCase()).equals(lproductos.getElementoI(i).getNombre().toLowerCase())) {
+				found=true;
+				return found;
+			}
+		}
+		return found;
+	}
+
+	public boolean buy(int cant,String product,String name) {
+		
+		boolean bought = false;
+		
+		for(int i=0 ; i<lproductos.getCant() ; i++) {
+		
+			if(product.toLowerCase().equals(lproductos.getElementoI(i).getNombre().toLowerCase())) {
+				
+				if(lproductos.getElementoI(i).getStock()>=cant) {
+					for(int j=0 ; j<lclientes.getCant() ; j++) {
+						if(lclientes.getElementoI(j).getNombre().toLowerCase().equals(name.toLowerCase())) {
+							boolean added =lclientes.getElementoI(j).addProductToCart(cant, product);
+							if(added==true) {
+								int actualStock = lproductos.getElementoI(i).getStock();
+								int newStock= actualStock-cant;
+								lproductos.getElementoI(i).setStock(newStock);
+								bought=true;
+								return bought;
+							}
+							else {
+								return bought;
+							}
+						}
+					}
+				}
+				else {
+					return bought;
+				}
+			}
+		}
+		return bought;
+	}
+	
+	public boolean changePassword(String password,String name) {
+		
+		boolean changed=false;
+		
+		for(int i=0 ; i<lclientes.getCant() ; i++) {
+			
+			if(lclientes.getElementoI(i).getNombre().toLowerCase().equals(name.toLowerCase())) {
+				lclientes.getElementoI(i).setContraseña(password);
+				changed=true;
+				return changed;
+			}
+			else {
+				return changed;
+			}
+		}
+		return changed;
+	}
+	
+	public String getData(){
+		
+		String data ="";
+		
+		for(int i=0 ; i<lproductos.getCant() ; i++) {
+			
+			if(lproductos.getElementoI(i).getStock()!=0) {
+				data+=lproductos.getElementoI(i).getNombre()+":  "+lproductos.getElementoI(i).getStock()+"\n";
+			}
+		}
+		return data;
+	}
+	
+	public String getBalance(String name){
+		
+		String data ="";
+		
+		for(int i=0 ; i<lclientes.getCant() ; i++) {
+			
+			if(lclientes.getElementoI(i).getNombre().toLowerCase().equals(name.toLowerCase())) {
+				data="Your balance is: "+lclientes.getElementoI(i).getSaldo()+"$"+"\n";
+			}
+		}
+		return data;
+	}
+	
+	public boolean addBalance(int addBalance,String name) {
+		
+		boolean added = false;
+		
+		for(int i=0 ; i<lclientes.getCant() ; i++) {
+			
+			if(lclientes.getElementoI(i).getNombre().toLowerCase().equals(name.toLowerCase())) {
+				if(addBalance>0) {
+					int actualBalance = lclientes.getElementoI(i).getSaldo();
+					int newBalance = actualBalance+addBalance;
+					lclientes.getElementoI(i).setSaldo(newBalance);
+					added = true;
+					return added;
+				}
+				else {
+					return added;
+				}
+			}
+			else {
+				return added;
+			}
+		}
+		return added;
+	}
+	
+	public String getCart(String name) {
+		
+		String data="";
+		
+		for(int i=0 ; i<lclientes.getCant() ; i++) {
+			if(lclientes.getElementoI(i).getNombre().toLowerCase().equals(name.toLowerCase())) {
+				for(int j=0 ; j<lclientes.getElementoI(i).getCont() ; j++) {
+					data+=lclientes.getElementoI(i).getElementICart(j)+": "+lclientes.getElementoI(i)
+					.getElementIcontCart(j)+" = ";
+					for(int l=0 ; l<lproductos.getCant() ; l++) {
+						if(lclientes.getElementoI(i).getElementICart(j).toLowerCase().equals(lproductos.getElementoI(l).getNombre().toLowerCase())) {
+							data+="$"+lclientes.getElementoI(i).getElementIcontCart(j)*
+									lproductos.getElementoI(l).getPrecio()+"\n";
+						}
+					}
+				}
+			}
+		}
+		return data;
+	}
+	
+	public boolean pay(String name) {
+		
+		int total = 0;
+		boolean payOut=false;
+		
+		for(int i=0 ; i<lclientes.getCant() ; i++) {
+			if(lclientes.getElementoI(i).getNombre().toLowerCase().equals(name.toLowerCase())) {
+				for(int j=0 ; j<lclientes.getElementoI(i).getCont() ; j++) {
+					for(int l=0 ; l<lproductos.getCant() ; l++) {
+						if(lclientes.getElementoI(i).getElementICart(j).toLowerCase().equals
+								(lproductos.getElementoI(l).getNombre().toLowerCase())) {
+							total+=(lclientes.getElementoI(i).getElementIcontCart(j)*lproductos.getElementoI(l).getPrecio());
+						}
+					}
+				}
+				if(total>lclientes.getElementoI(i).getSaldo()) {
+					return payOut;
+				}
+				else {
+					int newBalance= lclientes.getElementoI(i).getSaldo()-total;
+					lclientes.getElementoI(i).setSaldo(newBalance);
+					payOut=true;
+					
+					for(int n=0 ; n<lclientes.getElementoI(i).getCont() ; n++) {
+						boolean found=false;
+						for(int k=0 ; k<lventas.getCant() ; k++) {
+							if(lventas.getElementoI(k).getNombreProducto().toLowerCase().equals(lclientes.getElementoI(i).getElementICart(n).toLowerCase())) {
+								int addSales = lventas.getElementoI(k).getVecesVendido()+lclientes.getElementoI(i).getElementIcontCart(n);
+								lventas.getElementoI(k).setVecesVendido(addSales);
+								found=lclientes.getElementoI(i).deleteProduct(n, lclientes.getElementoI(i).getElementIcontCart(n));
+							}
+						}
+						if(found==false) {
+							Venta sales = new Venta(lclientes.getElementoI(i).getElementICart(n),lclientes.getElementoI(i).getElementIcontCart(n));
+							lventas.ingresar(sales);
+							lclientes.getElementoI(i).deleteProduct(n, lclientes.getElementoI(i).getElementIcontCart(n));
+						}
+					}
+					return payOut;
+				}
+			}
+		}
+		return payOut;
+	}
+	
+	public String calculatePayment(String name) {
+		
+		int total = 0;
+		String data="";
+		for(int i=0 ; i<lclientes.getCant() ; i++) {
+			if(lclientes.getElementoI(i).getNombre().toLowerCase().equals(name.toLowerCase())) {
+				for(int j=0 ; j<lclientes.getElementoI(i).getCont() ; j++) {
+					for(int l=0 ; l<lproductos.getCant() ; l++) {
+						if(lclientes.getElementoI(i).getElementICart(j).toLowerCase().equals
+								(lproductos.getElementoI(l).getNombre().toLowerCase())) {
+							total+=(lclientes.getElementoI(i).getElementIcontCart(j)*lproductos.getElementoI(l).getPrecio());
+							data=String.valueOf(total);
+						}
+					}
+				}
+			}
+		}
+		return data;
+	}
+	
+	public boolean removeProductoFromCart(String removeProduct , String name , int cantRemove) {
+		
+		boolean removed=false;
+		
+		for(int i=0 ; i<lclientes.getCant() ; i++) {
+			if(lclientes.getElementoI(i).getNombre().toLowerCase().equals(name.toLowerCase())) {
+				for(int j=0 ; j<lclientes.getElementoI(i).getCont() ; j++) {
+					if(lclientes.getElementoI(i).getElementICart(j).toLowerCase().equals(removeProduct.toLowerCase())) {
+						removed = lclientes.getElementoI(i).deleteProduct(j,cantRemove);
+						if(removed=true) {
+							for(int l=0 ; l<lproductos.getCant() ; l++) {
+								if(lproductos.getElementoI(l).getNombre().toLowerCase().equals(removeProduct)) {
+									int newStock = lproductos.getElementoI(l).getStock()+cantRemove;
+									lproductos.getElementoI(l).setStock(newStock);
+								}
+							}
+							return removed;
+						}
+						else {
+							return removed;
+						}
+					}
+				}
+			}			
+		}
+		return removed;
+	}
+}
