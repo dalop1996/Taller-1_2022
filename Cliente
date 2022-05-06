@@ -1,0 +1,112 @@
+package dominio;
+
+public class Cliente {
+	
+	private String nombre;
+	private String contraseña;
+	private int saldo;
+	private String correo;
+	private int cont;
+	
+	private String [] cart;
+	private int [] contCart;
+	
+	public Cliente(String nombre, String contraseña, int saldo, String correo) {
+		super();
+		this.nombre = nombre;
+		this.contraseña = contraseña;
+		this.saldo = saldo;
+		this.correo = correo;
+		cart= new String[100];
+		contCart=new  int[100];
+		cont=0;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getContraseña() {
+		return contraseña;
+	}
+
+	public void setContraseña(String contraseña) {
+		this.contraseña = contraseña;
+	}
+
+	public int getSaldo() {
+		return saldo;
+	}
+
+	public void setSaldo(int saldo) {
+		this.saldo = saldo;
+	}
+
+	public String getCorreo() {
+		return correo;
+	}
+
+	public void setCorreo(String correo) {
+		this.correo = correo;
+	}
+
+	public boolean addProductToCart(int cant, String product) {
+		
+		if(cont<100) {
+			cart[cont]=product;
+			contCart[cont]=cant;
+			cont++;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public int getCont() {
+		return cont;
+	}
+
+	public String getElementICart(int position) {
+		String eliminado="0";
+		if(cart[position]!=null) {
+			return cart[position];
+		}
+		else {
+			return eliminado;
+		}
+	}
+	
+	public int getElementIcontCart(int position) {
+		int eliminado=0;
+		if(contCart[position]!=0) {
+			return contCart[position];
+		}
+		else {
+			return eliminado;
+		}
+	}
+
+	public boolean deleteProduct(int position , int cantRemove) {
+		
+		boolean removed = true;
+		
+		if(contCart[position]-cantRemove<=0) {
+			for(int i=position ; i<cont ; i++) {
+				
+				cart[i]=cart[i+1];
+				contCart[i]=contCart[i+1];
+			}
+			cont--;
+		}
+		else {
+			contCart[position]-=cantRemove;	
+		}
+		return removed;
+	}
+
+}
