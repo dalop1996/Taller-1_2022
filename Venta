@@ -1,0 +1,31 @@
+package dominio;
+
+public class Venta {
+	
+	
+	private String nombreProducto;
+	private int vecesVendido;
+	
+	public Venta(String nombreProducto, int vecesVendido) {
+		super();
+		this.nombreProducto = nombreProducto;
+		this.vecesVendido = vecesVendido;
+	}
+
+	public String getNombreProducto() {
+		return nombreProducto;
+	}
+
+	public int getVecesVendido() {
+		return vecesVendido;
+	}
+
+	public void setNombreProducto(String nombreProducto) {
+		this.nombreProducto = nombreProducto;
+	}
+
+	public void setVecesVendido(int vecesVendido) {
+		this.vecesVendido = vecesVendido;
+	}
+	
+}
