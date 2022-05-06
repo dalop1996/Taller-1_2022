@@ -1,0 +1,448 @@
+package logica;
+
+
+
+	import java.io.File;
+	import java.io.FileNotFoundException;
+	import java.util.Scanner;
+
+	/** Made by:
+	 * David Aros
+	 * Sebastian Gallardo
+	 * Diego López
+	 */
+
+	public class App {
+		
+		/**
+		 * Saves the information from the Clientes.txt to the general list Cliente
+		 * @param system
+		 * @throws FileNotFoundException
+		 */
+		public static void leerClientes(SystemI system) throws FileNotFoundException {
+			
+			Scanner sc = new Scanner(new File("clientes.txt"));
+			
+			while(sc.hasNextLine()) {
+				
+				String line = sc.nextLine();
+				String [] partes = line.split(",");
+				
+				String nombre = partes[0];
+				String contraseña = partes[1];
+				int saldo = Integer.parseInt(partes[2]);
+				String correo = partes[3];
+				
+				system.ingresarCliente(nombre,contraseña,saldo,correo);
+			}
+		}
+		
+		/**
+		 * Saves the information from the Productos.txt to the general list Producto
+		 * @param system
+		 * @throws FileNotFoundException
+		 */
+		public static void leerProductos(SystemI system) throws FileNotFoundException {
+			
+			Scanner sc = new Scanner(new File("productos.txt"));
+			
+			while(sc.hasNextLine()) {
+				
+				String line = sc.nextLine();
+				String [] partes = line.split(",");
+				
+				String nombre = partes[0];
+				int precio = Integer.parseInt(partes[1]);
+				int unidades = Integer.parseInt(partes[2]);
+				
+				system.ingresarProductos(nombre,precio,unidades);
+			}
+		}
+		
+		/**
+		 * Saves the information from the Ventas.txt to the general list Venta
+		 * @param system
+		 * @throws FileNotFoundException
+		 */
+		public static void leerVentas(SystemI system) throws FileNotFoundException {
+			
+			Scanner sc = new Scanner(new File("ventas.txt"));
+			
+			while(sc.hasNextLine()) {
+				
+				String line = sc.nextLine();
+				String [] partes = line.split(",");
+				
+				String nombre = partes[0];
+				int vecesVendido = Integer.parseInt(partes[1]);
+				
+				system.ingresarVentas(nombre,vecesVendido);
+			}
+		}
+		
+		/**
+		 * Calls the sub programs menuCliente or menuAdmin according to the info given
+		 * @param system
+		 */
+		public static void inicioSesion(SystemI system) {
+			
+			Scanner sc = new Scanner(System.in);
+			String respuesta= "";
+			
+			while(respuesta!="2") {
+				
+				System.out.println("Bienvenido a la app de Xiaomiau"+"\n"+""+""+"\n"+"Iniciar Sesion ( 1 )"+"\n"+"Salir ( 2 )"
+									+"\n"+"Respuesta: "+"\n");
+				respuesta = sc.nextLine();
+				
+				if(respuesta.equals("1")) {
+					
+					System.out.println("Ingrese su nombre: "+"\n");
+					String name= sc.nextLine();
+					
+					System.out.println("Ingrese su contraseña: "+"\n");
+					String password= sc.nextLine();
+					
+					if("ADMIN".equals(name)&&"1".equals(password)) {
+						
+						menuAdmin(system);
+					}
+					else{
+						boolean ingreso = system.obtenerCliente(name,password);
+						
+						if(ingreso) {
+							menuCliente(system,name,password);
+						}
+						else {
+							System.out.println("Cliente no encontrado..."+"\n");
+						}
+					}		
+				}
+				else if(respuesta.toLowerCase().equals("2")) {
+					break;	
+				}
+				else {
+					System.out.println("Ingrese una opcion valida..."+"\n");
+				}
+			}
+		}
+		
+		/**
+		 * Sub program for the client menu.
+		 * Calls the next sub programs:
+		 * searchProduct
+		 * buy
+		 * changePassword
+		 * getData
+		 * getBalance
+		 * addBalance
+		 * getCart
+		 * removeProductoFromCart
+		 * calculatePayment
+		 * pay
+		 * @param system
+		 * @param name
+		 * @param password
+		 */
+		public static void menuCliente(SystemI system , String name , String password) {
+			
+			Scanner sc = new Scanner(System.in);
+			String answer="";
+			
+			
+			while(answer!="9") {
+				
+				System.out.println("Welcome to the Customer menu"+"\n"+""+"\n"+"Choose Product ( 1 )"
+						+"\n"+"Change password ( 2 )"+"\n"+"See product catalog ( 3 )"+"\n"
+						+"View balance (4)"+"\n"+"Recharge balance ( 5 )"+"\n"+"View cart ( 6 )"+"\n"
+						+"Remove from cart ( 7 )"+"\n"+"Pay cart ( 8 )"+"\n"+"Exit ( 9 )"+"\n");
+				
+				answer= sc.nextLine();
+				
+				if("9".equals(answer)) {
+					break;
+				}
+				
+				else if("1".equals(answer)) {
+					
+					System.out.println("What product do you want to add?: ");
+					String product = sc.nextLine();
+					
+					boolean found = system.searchProduct(product);
+					
+					if(found==true) {
+						
+						System.out.println("How many units do you want to take?");
+						int cant = sc.nextInt();
+						
+						boolean bought = system.buy(cant,product,name);
+						
+						if(bought==true) {
+							
+							System.out.println("Purchase added to cart successfully");
+							
+							
+						}
+						
+						else {
+							System.out.println("Can't buy the product");
+						}
+					}
+					else {
+						System.out.println("The product does not exist..."+"\n");
+					}
+					sc.nextLine();
+				}
+				else if("2".equals(answer)) {
+					
+					System.out.println("Enter the old password: "+"\n");
+					String correctPassword = sc.nextLine();
+				
+					if(correctPassword.equals(password)) {
+						
+						System.out.println("Enter the new password: "+"\n");
+						String newPassword = sc.nextLine();
+						
+						boolean changed = system.changePassword(newPassword,name);
+						
+						if(changed==true) {
+							System.out.println("Password changed successfully");
+						}
+						else {
+							System.out.println("Password does not meet requirements...");
+						}
+					}
+					else {
+						System.out.println("Password incorrect...");
+					}
+					
+				}
+				else if("3".equals(answer)) {
+					 
+					String data = system.getData();
+					System.out.println(data);
+				
+				}
+				
+				else if("4".equals(answer)) {
+					
+					String data = system.getBalance(name);
+					System.out.println(data);
+				
+				}
+				
+				else if("5".equals(answer)) {
+					
+					System.out.println("How much balance do you want to top up?");
+					int addBalance = sc.nextInt();
+					system.addBalance(addBalance,name);
+					System.out.println("Balance entered correctly");
+					sc.nextLine();
+				}
+				
+				else if("6".equals(answer)) {
+					
+					String data = system.getCart(name);
+					System.out.println(data);
+					
+				}
+				
+				else if("7".equals(answer)) {
+					
+					System.out.println("What product do you want to remove?");
+					String removeProduct = sc.nextLine();
+					
+					System.out.println("How many units do you want to remove?");
+					int cantRemove = sc.nextInt();
+					
+					boolean removed = system.removeProductoFromCart(removeProduct,name,cantRemove);
+					
+					if(removed=true) {
+						System.out.println("Product removed from cart successfully");
+					}
+					else {
+						System.out.println("It is not possible to remove the product");
+					}
+					
+					sc.nextLine();
+				}
+				
+				else if("8".equals(answer)) {
+					
+					String total = system.calculatePayment(name);
+					System.out.println("Su total a pagar es de: "+total+"\n");
+					System.out.println("Yes or No: "+"\n");
+					String yesOrNot = sc.nextLine();
+					
+					if(yesOrNot.toLowerCase().equals("yes")) {
+						
+						boolean payOut = system.pay(name);
+						
+						if(payOut==true) {
+							System.out.println("The purchase has been paid correctly"+"\n");
+						}
+						else {
+							System.out.println("The purchase could not be paid..."+"\n");
+						}
+					}
+					
+					else if(yesOrNot.toLowerCase().equals("no")) {
+						break;
+					}
+					else {
+						System.out.println("Enter a valid answer..."+"\n");
+					}
+				}
+				else {
+					System.out.println("Enter a valid answer..."+"\n");
+				}
+			}
+		}
+		
+		/**
+		 * Sub program for the admin menu.
+		 * Calls the next sub programs:
+		 * bloquearUsuario
+		 * obtenerHistorial
+		 * obtenerHistorial
+		 * agregarProducto
+		 * obtenerDatos
+		 * agregarStock
+		 * modificarPrecio
+		 * @param system
+		 */
+		public static void menuAdmin(SystemI system) {
+			
+			Scanner sc = new Scanner(System.in);
+			String respuesta="";
+			
+			while(respuesta!="6") {
+				
+				System.out.println("Bienvenido al menu ADMIN"+"\n"+""+"\n"+"Bloquear Usuario ( 1 )"
+				+"\n"+"Ver Historial de Compras ( 2 )"+"\n"+"Agregar Producto ( 3 )"+"\n"+"Agregar Stock ( 4 )"+"\n"
+				+"Actualizar Datos (5)"+"\n"+"Salir ( 6 )"+"\n");
+				
+				respuesta = sc.nextLine();
+				
+				
+				
+				if(respuesta.equals("6")) {
+					break;
+				}
+				
+				else if(respuesta.equals("1")) {
+					
+					System.out.println("Ingreses el cliente a eliminar:"+"\n");
+					String usuarioAEliminar=sc.nextLine();
+					
+					boolean bloqueado = system.bloquearUsuario(usuarioAEliminar);
+					
+					if(bloqueado=true) {
+						System.out.println("El cliente a sido eliminado con exito"+"\n");
+					}
+					else {
+						System.out.println("El cliente no a sido encontrado..."+"\n");
+					}
+				}
+				
+				else if(respuesta.equals("2")) {
+								
+					String dato = system.obtenerHistorial();
+					System.out.println(dato);
+				}
+				
+				else if(respuesta.equals("3")) {
+					
+					System.out.println("Ingrese el nombre del producto nuevo: "+"\n");
+					String nombre=sc.nextLine();
+					
+					System.out.println("Ingrese el precio del producto nuevo: "+"\n");
+					int precio=sc.nextInt();
+					
+					System.out.println("Ingrese el stock del producto nuevo: "+"\n");
+					int stock=sc.nextInt();
+					
+					
+					boolean productoAgregado = system.agregarProducto(nombre,precio,stock);
+					
+					if(productoAgregado) {
+						System.out.println("El Producto a sido agregado con exito"+"\n");
+						
+						String dato = system.obtenerDatos();
+						System.out.println(dato);
+						
+					}
+					else {
+						System.out.println("No se a podido ingresar el producto..."+"\n");
+					}
+					sc.nextLine();
+				}
+				
+				else if(respuesta.equals("4")) {
+					
+					System.out.println("Ingrese el nombre del producto para agregar stock: "+"\n");
+					String nombre=sc.nextLine();
+					
+					System.out.println("Ingrese el num de stock nuevo: "+"\n");
+					int stock =sc.nextInt();
+					
+					boolean agregado = system.agregarStock(nombre,stock);
+					
+					if(agregado==true) {
+						
+						System.out.println("Stock agregado con exito"+"\n");
+					}
+					else {
+						
+						System.out.println("No se a podido agregar el stock"+"\n");
+					}
+					sc.nextLine();
+				}
+				
+				else if(respuesta.equals("5")) {
+					
+					System.out.println("Enter product name: "+"\n");
+					String nombre=sc.nextLine();
+					
+					System.out.println("Enter the new price: "+"\n");
+					int precio=sc.nextInt();
+					
+					boolean cambiado = system.modificarPrecio(nombre,precio);
+					
+					if(cambiado) {
+						
+						System.out.println("Price changed successfully"+"\n");
+					}
+					else {
+						
+						System.out.println("price cannot be changed..."+"\n");
+					}
+					sc.nextLine();
+				}
+				
+				else {
+					System.out.println("Ingrese una respuesta valida.."+"\n");
+				}
+			}
+		}
+		
+		/**
+		 * Main of the app
+		 * Calls the sub programs to read and save the information from the txt
+		 * Calls the inicioSesion sub program
+		 * @param args
+		 * @throws FileNotFoundException
+		 */
+		public static void main(String[] args) throws FileNotFoundException{
+			
+			SystemI system = new SystemImpl();
+			
+			leerClientes(system);
+			leerProductos(system);
+			leerVentas(system);
+			
+			inicioSesion(system);
+			
+		}
+	}
+
