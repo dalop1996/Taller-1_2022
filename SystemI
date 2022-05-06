@@ -1,0 +1,161 @@
+package logica;
+
+public interface SystemI {
+
+	/**
+	 * Adds the info from  Clientes.txt to ListaClientes
+	 * @param name
+	 * @param password
+	 * @param saldo
+	 * @param correo
+	 * @return boolean
+	 */
+	public boolean ingresarCliente(String name , String password,int saldo,String correo);
+	
+	/**
+	 * Adds the info from  Productos.txt to ListaProductos
+	 * @param name
+	 * @param precio
+	 * @param unidades
+	 * @return
+	 */
+	public boolean ingresarProductos(String name,int precio,int unidades);
+	
+	/**
+	 * Adds the info from  Ventas.txt to ListaVentas
+	 * @param name
+	 * @param vecesVendido
+	 * @return
+	 */
+	public boolean ingresarVentas(String name,int vecesVendido);
+	
+	/**
+	 * Adds a new product to the ListaProductos
+	 * @param nombre
+	 * @param precio
+	 * @param stock
+	 * @return
+	 */
+	public boolean agregarProducto(String nombre, int precio, int stock);
+	
+	/**
+	 * Adds stock to a product
+	 * @param name
+	 * @param stock
+	 * @return
+	 */
+	public boolean agregarStock(String name, int stock);
+	
+	/**
+	 * Verifies if the client is already registered
+	 * @param name
+	 * @param password
+	 * @return
+	 */
+	public boolean obtenerCliente(String name , String password);
+	
+	/**
+	 * Changes the value of a given product
+	 * @param name
+	 * @param precio
+	 * @return
+	 */
+	public boolean modificarPrecio(String name, int precio);
+	
+	/**
+	 * Deletes a Client from the list
+	 * @param usuarioAEliminar
+	 * @return
+	 */
+	public boolean bloquearUsuario(String usuarioAEliminar);
+	
+	/**
+	 * Verifies if the product exist
+	 * @param product
+	 * @return
+	 */
+	public boolean searchProduct(String product);
+	
+	/**
+	 * Search if the product exists and if there is enough stock to buy the given product, then adds to the cart
+	 * @param cant
+	 * @param product
+	 * @param name
+	 * @return
+	 */
+	public boolean buy(int cant,String product,String name);
+	
+	/**
+	 * Sets a new passwords for the client
+	 * @param password
+	 * @param name
+	 * @return
+	 */
+	public boolean changePassword(String password , String name);
+	
+	/**
+	 * Adds money to the wallet of the client
+	 * @param addBalance
+	 * @param name
+	 * @return
+	 */
+	public boolean addBalance(int addBalance,String name);
+	
+	/**
+	 * Removes a product or an amount from the cart list
+	 * @param removeProduct
+	 * @param name
+	 * @param cantRemove
+	 * @return
+	 */
+	public boolean removeProductoFromCart(String removeProduct , String name , int cantRemove);
+	
+	/**
+	 * Calculates total amount to pay from the cart list and then verifies if the client has enough to pay,
+	 * updates the client list and product list if necessary.
+	 * @param name
+	 * @return
+	 */
+	public boolean pay(String name);
+	
+	/**
+	 * Calculates the amount to pay from the products in the cart list and returns the amount
+	 * @param name
+	 * @return
+	 */
+	public String calculatePayment(String name);
+	
+	/**
+	 * Returns the amount of sales of a product
+	 * @return
+	 */
+	public String obtenerHistorial();
+	
+	/**
+	 * Return the name, value and stock of all the products
+	 * @return
+	 */
+	public String obtenerDatos();
+	
+	/**
+	 * Returns the name and stock of all the products
+	 * @return
+	 */
+	public String getData();
+	
+	/**
+	 * Returns the client balance in his account
+	 * @param name
+	 * @return
+	 */
+	public String getBalance(String name);
+	
+	/**
+	 * Return the elements in the client cart
+	 * @param name
+	 * @return
+	 */
+	public String getCart(String name);
+
+	
+}
