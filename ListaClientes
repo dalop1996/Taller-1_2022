@@ -1,0 +1,64 @@
+package logica;
+import dominio.*;
+
+public class ListaClientes {
+		
+		
+	private int max;
+	private int cant;
+		
+	private Cliente [] lclientes;
+		
+	public ListaClientes(int max) {
+			
+		cant=0;
+		this.max=max;
+			
+		lclientes= new Cliente[max];
+			
+	}
+		
+	public boolean ingresar(Cliente cliente) {
+			
+		if(cant<max) {
+				
+			lclientes[cant]=cliente;
+			cant++;
+			return true;
+		}
+		return false;
+	}
+		
+	public Cliente buscar(String nombre) {
+			
+		for(int i=0 ; i<cant ; i++) {
+				
+			if(lclientes[i].getNombre().equals(nombre)) {
+				return lclientes[i];
+			}
+		}
+		return null;
+	}	
+	
+	public boolean eliminar(Cliente cliente) {
+			
+		for(int i=0 ; i<cant ; i++) {
+			if(lclientes[i].equals(cliente)){
+				lclientes[i]=lclientes[i+1];
+			}
+		}	
+		lclientes[cant]=null;
+		cant--;
+		return false;
+	}
+		
+		
+	public int getCant() {
+		return cant;
+	}
+		
+	public Cliente getElementoI(int posicion) {
+		return lclientes[posicion];
+	}
+
+}
